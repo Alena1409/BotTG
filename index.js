@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Bot, GrammyError, HttpError, Keyboard, InlineKeyboard} = require('grammy');
+const { Bot, GrammyError, HttpError, Keyboard, InlineKeyboard, InputFile} = require('grammy');
 
 const bot = new Bot (process.env.KEY);
 
@@ -16,6 +16,7 @@ bot.api.setMyCommands([
 bot.command('start', async (ctx) => {
     const startKeyboard = new Keyboard().text("СДЭК").text("WB").text("OZON").row().text("Узнать информацию о компании").row().text("Написать оператору").row().text("Написать пожелания").resized();
 
+    await ctx.replyWithPhoto(new InputFile('logo.png'));
     await ctx.reply('Привет, я бот BRING, помогу тебе разобраться. Жми на кнопку:',{
         reply_markup: startKeyboard
     });
