@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { Bot, GrammyError, HttpError, Keyboard, InlineKeyboard, InputFile} = require('grammy');
+const fs = require('fs');
 
 const bot = new Bot (process.env.KEY);
 
@@ -22,8 +23,13 @@ bot.command('start', async (ctx) => {
     await ctx.reply('Привет, я бот BRING, помогу тебе разобраться.\n\nНаш <a href="https://kon-express.ru/">сайт</a>\nНаш <a href="https://www.instagram.com/bring__courier/">Instagram</a>\nНаш менеджер: @bring_g',
         {parse_mode: 'HTML', disable_web_page_preview: true}
     );
-    await ctx.reply('Жми на кнопку:',{
+    await ctx.reply('Следуй инструкциям или напиши свой вопрос.',{
         reply_markup: startKeyboard
+    });
+    fs.readFile('usome.txt', 'utf-8', (err, data) => {
+        fs.writeFile('usome.txt', data + '\n' + [ctx.message.from.id, ctx.message.from.first_name, ctx.message.from.username, ctx.message.text], (err, data) => {
+            console.log('good');
+        }); //записать в файл
     });
 });
 
@@ -227,11 +233,11 @@ bot.hears('Коммерческие грузы', async (ctx) => {
     );
 });
 
-//РЕАКЦИЯ НА ЛЮБОЙ ТЕКСТ СЛОВО
-bot.on('message:text', async (ctx) => {
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру ...</a>',
-    {parse_mode: 'HTML', disable_web_page_preview: true});
-});
+// //РЕАКЦИЯ НА ЛЮБОЙ ТЕКСТ СЛОВО
+// bot.on('message:text', async (ctx) => {
+//     await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру ...</a>',
+//     {parse_mode: 'HTML', disable_web_page_preview: true});
+// });
 
 //ОБРОБОТЧИК ОШИБОК
 bot.catch((err) => {
