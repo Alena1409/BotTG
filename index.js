@@ -374,11 +374,8 @@ bot.hears('Наши данные и офисы', async (ctx) => {
     await ctx.reply('Батуми, ул. Шерифа Химшиашвили, 47а', { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.replyWithLocation(41.631546, 41.603927);
 
-    await ctx.reply('Тбилиси, ул. Мераба Костава, 75 (метро Тех. Университет)', { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.replyWithLocation(41.721569, 44.7779537);
-
-    await ctx.reply('Кобулети, ул. Тависуфлебис, 13', { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.replyWithLocation(41.820968, 41.777888);
+    await ctx.reply('Тбилиси, ул. Цотне Дадиани, 7А', { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.replyWithLocation(41.719451, 44.802999);
 
     await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
         { parse_mode: 'HTML', disable_web_page_preview: true }
