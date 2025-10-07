@@ -1,3 +1,5 @@
+const texts = require('./texts');
+
 require('dotenv').config();
 const { Bot, GrammyError, HttpError, Keyboard, InlineKeyboard, InputFile } = require('grammy');
 const fs = require('fs');
@@ -15,6 +17,7 @@ bot.api.setMyCommands([
     { command: 'europa', description: 'Доставка в Европу' },
     { command: 'doc', description: 'Документы' },
     { command: 'contacts', description: 'Контактные данные' },
+    { command: 'rules', description: 'Правила' },
 ]);
 
 bot.command('start', async (ctx) => {
@@ -23,7 +26,7 @@ bot.command('start', async (ctx) => {
         .text("Доставка WB").text("Доставка OZON")
         .row().text("Другие Интернет Магазины").text("Личные вещи")
         .row().text("Коммерческие грузы").text("Доставка в Европу")
-        .row().text('Документы').text("Наши данные и офисы")//.resized();
+        .row().text('Документы').text("Офисы и правила")//.resized();
 
     await ctx.replyWithPhoto(new InputFile('logo.png'));
     await ctx.reply('Привет, я бот BRING, помогу тебе разобраться.\n\nНаш <a href="https://www.instagram.com/bring__courier/">Instagram</a>\nНаш менеджер: @bring_g',
@@ -38,7 +41,7 @@ bot.command('start', async (ctx) => {
             console.error('Ошибка при чтении файла:', err);
             return;
         }
-
+ 
         // Создаем строку для нового контакта
         const newContact = [ctx.message.from.id, ctx.message.from.first_name, ctx.message.from.username, ctx.message.text].join(',');
 
@@ -64,163 +67,117 @@ bot.command('start', async (ctx) => {
 //WB and OZON
 bot.command('wb', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 5-7 дней', 'expresswb').row().text('Эконом 18 gel/kg, 15-17 дней', 'economwb');
+    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 5-10 дней', 'expresswb').row().text('Эконом 18 gel/kg, 15-17 дней', 'economwb');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
     });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
 bot.hears('Доставка WB', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 5-7 дней', 'expresswb').row().text('Эконом 18 gel/kg, 15-17 дней', 'economwb');
+    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 5-10 дней', 'expresswb').row().text('Эконом 18 gel/kg, 15-17 дней', 'economwb');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
     });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.links.manager,  { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
 bot.command('ozon', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 5-7 дней', 'expressozon').row().text('Эконом 18 gel/kg, 15-17 дней', 'economoz');
+    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 5-10 дней', 'expressozon').row().text('Эконом 18 gel/kg, 15-17 дней', 'economoz');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
     });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
 bot.hears('Доставка OZON', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 5-7 дней', 'expressozon').row().text('Эконом 18 gel/kg, 15-17 дней', 'economoz');
+    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 5-10 дней', 'expressozon').row().text('Эконом 18 gel/kg, 15-17 дней', 'economoz');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
     });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 })
 
 bot.callbackQuery('expressozon', async (ctx) => {
 
-    const text = '<b>Инструкция:</b>\n\nТариф 20 лари за кг. Срок доставки 5-7 дней.\n\n1. Оформить и оплатить заказ на адрес ПВЗ: г. Владикавказ, <b>ул. Павлика Морозова, 49.</b>\n\n2. ⁠Дождаться поступления заказа на пункт выдачи.\n\n3. ⁠Прислать:\n - QR-код для получения заказа;\n - ⁠город получатель;\n - ⁠перечень товаров.\n\n4. После поступления заказа на пункт выдачи Вам будет направлено персональное уведомление';
     await ctx.answerCallbackQuery();
 
-    await ctx.reply(text,
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
-    await ctx.reply('<a href="https://t.me/BRING_registration_order_bot">Отправить данные заказа ... </a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.expressozon, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true });
 })
 
 bot.callbackQuery('expresswb', async (ctx) => {
 
-    const text = '<b>Инструкция:</b>\n\nТариф 20 лари за кг. Срок доставки 5-7 дней.\n\n1. Оформить и оплатить заказ на адрес ПВЗ: г. Владикавказ, <b>ул. Тельмана, 37.</b>\n\n2. ⁠Дождаться поступления заказа на пункт выдачи.\n\n3. ⁠Прислать:\n - QR-код для получения заказа;\n - ⁠город получатель;\n - ⁠перечень товаров.\n\n4. После поступления заказа на пункт выдачи Вам будет направлено персональное уведомление';
     await ctx.answerCallbackQuery();
 
-    await ctx.reply(text,
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
-    await ctx.reply('<a href="https://t.me/BRING_registration_order_bot">Отправить данные заказа ... </a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.expresswb, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true });
 })
 
 bot.callbackQuery('economwb', async (ctx) => {
 
-    const text = '<b>Инструкция:</b>\n\nТариф 18 лари за кг. Срок доставки 15-17 дней.\n\n1. Оформить и оплатить заказ на адрес ПВЗ: г. Владикавказ, <b>ул. Тельмана, 37.</b>\n\n2. ⁠Дождаться поступления заказа на пункт выдачи.\n\n3. ⁠Прислать:\n - QR-код для получения заказа;\n - ⁠город получатель;\n - ⁠перечень товаров.\n\n4. После поступления заказа на пункт выдачи Вам будет направлено персональное уведомление';
     await ctx.answerCallbackQuery();
 
-    await ctx.reply(text, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
-    await ctx.reply('<a href="https://t.me/BRING_registration_order_bot">Отправить данные заказа ... </a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.economwb, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true });
 })
 
 bot.callbackQuery('economoz', async (ctx) => {
 
-    const text = '<b>Инструкция:</b>\n\nТариф 18 лари за кг. Срок доставки 15-17 дней.\n\n1. Оформить и оплатить заказ на адрес ПВЗ: г. Владикавказ, <b>ул. Павлика Морозова, 49.</b>\n\n2. ⁠Дождаться поступления заказа на пункт выдачи.\n\n3. ⁠Прислать:\n - QR-код для получения заказа;\n - ⁠город получатель;\n - ⁠перечень товаров.\n\n4. После поступления заказа на пункт выдачи Вам будет направлено персональное уведомление';
     await ctx.answerCallbackQuery();
 
-    await ctx.reply(text, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
-    await ctx.reply('<a href="https://t.me/BRING_registration_order_bot">Отправить данные заказа ...</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.economoz, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
 //ДРУГИЕ ИНТЕРНЕТ МАГАЗИНЫ
 bot.command('im', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 5-7 дней', 'expressim').row().text('Эконом 18 gel/kg, 15-17 дней', 'economim');
+    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 5-10 дней', 'expressim').row().text('Эконом 18 gel/kg, 15-17 дней', 'economim');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
     });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
 bot.hears('Другие Интернет Магазины', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 5-7 дней', 'expressim').row().text('Эконом 18 gel/kg, 15-17 дней', 'economim');
+    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 5-10 дней', 'expressim').row().text('Эконом 18 gel/kg, 15-17 дней', 'economim');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
     });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
 bot.callbackQuery('expressim', async (ctx) => {
 
-    const text = '<b>Инструкция:</b>\n\nТариф 20 лари за кг. Срок доставки 5-7 дней.\n\n1. Вы можете оформить заказ в любом интернет магазине осуществляющем доставку посредством СДЭК.\nНапример, Золотое яблоко, Авито и другие.\n\n2. Необходимо оформить и оплатить заказ и его доставку в полном объёме.\n\n3. Данные получателя и адрес пункта СДЕК для доставки:\n- Калашникова Елена;\n- 79188272702\n- пункт СДЭК г. Владикавказ, пр-к Коста, 79.\n\n4. Дождаться поступления заказа на пункт выдачи.\n\n5. Прислать:\n- код для получения заказа;\n- ⁠город получатель;\n- ⁠перечень товаров;\n- указать выбранный тариф.\n\n6. После поступления заказа на пункт выдачи Вам будет направлено персональное уведомление.';
     await ctx.answerCallbackQuery();
 
-    await ctx.reply(text, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
-    await ctx.reply('<a href="https://t.me/BRING_registration_order_bot">Отправить данные заказа ... </a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.expressim, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true });
 })
 
 bot.callbackQuery('economim', async (ctx) => {
 
-    const text = '<b>Инструкция:</b>\n\nТариф 18 лари за кг. Срок доставки 15-17 дней.\n\n1. Вы можете оформить заказ в любом интернет магазине осуществляющем доставку посредством СДЭК.\nНапример, Золотое яблоко, Авито и другие.\n\n2. Необходимо оформить и оплатить заказ и его доставку в полном объёме.\n\n3. Данные получателя и адрес пункта СДЕК для доставки:\n- Калашникова Елена;\n- 79188272702\n- пункт СДЭК, г. Владикавказ, пр-к Коста, 79.\n\n4. Дождаться поступления заказа на пункт выдачи.\n\n5. Прислать:\n- код для получения заказа;\n- ⁠город получатель;\n- ⁠перечень товаров;\n- указать выбранный тариф.\n\n6. После поступления заказа на пункт выдачи Вам будет направлено персональное уведомление.';
     await ctx.answerCallbackQuery();
 
-    await ctx.reply(text, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
-    await ctx.reply('<a href="https://t.me/BRING_registration_order_bot">Отправить данные заказа ... </a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.economim, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
 //Личные вещи
@@ -231,9 +188,7 @@ bot.command('owen', async (ctx) => {
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
     });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
 bot.hears('Личные вещи', async (ctx) => {
@@ -243,144 +198,117 @@ bot.hears('Личные вещи', async (ctx) => {
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
     });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
 bot.callbackQuery('expressowen', async (ctx) => {
 
-    const text = '<b>Инструкция:</b>\n\nТариф личные вещи Экспресс:\n\nПо данному тарифу доставка в Грузию и отправка из Грузии личных вещей осуществляется по следующим направлениям: Россия, Беларусь, Казахстан, Киргизия, Армения.\n\nТранспортировка груза за пределами Грузии осуществляется компанией СДЭК.\n\nСтоимость доставки 20 лари за кг + тариф СДЭК.\n\nПредварительно посчитать стоимость можно оформив заказ. Бот проверяет корректность данных, заказы с некорректными данными обработаны не будут.\n\nДля оформления заказ: \n\n1. Необходимо отправить следующую информацию:\n- город отправления;\n- город назначения;\n- вес отправления;\n- что хотите отправить;\nконтактны данные получателя.\n\n2. При отправке из Грузии бот пришлёт инструкцию, как можно сдать отправление.\n\nПри отправке в Грузию бот пришлёт накладную СДЭК для передачи отправления в пункт приёма.\n\n3. После поступления заказа на пункт выдачи, получателю будет направлено персональное уведомление.';
-
     await ctx.answerCallbackQuery();
-    await ctx.reply(text, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
-    await ctx.reply('<a href="https://t.me/BRING_registration_delivery_bot">Отправить данные заказа ... </a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.expressowen, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true });
 })
 
 bot.callbackQuery('economowen', async (ctx) => {
 
-    const text = '<b>Инструкция:</b>\n\nТариф личные вещи Эконом:\n\nПо данному тарифу доставка в Грузию и отправка из Грузии личных вещей осуществляется по следующим направлениям: Россия, Беларусь, Казахстан, Киргизия, Армения.\n\nТранспортировка груза за пределами Грузии осуществляется компанией СДЭК.\n\nСтоимость доставки 18 лари за кг + тариф СДЭК.\n\nПредварительно посчитать стоимость можно оформив заказ. Бот проверяет корректность данных, заказы с некорректными данными обработаны не будут.\n\nДля оформления заказ:\n\n1. Необходимо отправить следующую информацию:\n- город отправления;\n- город назначения;\n- вес отправления;\n- что хотите отправить;\n- контактны данные получателя.\n\n2. При отправке из Грузии бот пришлёт инструкцию, как можно сдать отправление.\n\nПри отправке в Грузию бот пришлёт накладную СДЭК для передачи отправления в пункт приёма.\n\n3. После поступления заказа на пункт выдачи, получателю будет направлено персональное уведомление.';
-
     await ctx.answerCallbackQuery();
-    await ctx.reply(text, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
-    await ctx.reply('<a href="https://t.me/BRING_registration_delivery_bot">Отправить данные заказа ... </a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.economowen, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
 //Доставкав в Европу
 bot.command('europa', async (ctx) => {
 
-    const text = '<b>Инструкция:</b>\n\nДоставка в Европу.\n\nТариф 8,5 евро за кг. Срок 3-4 недели. Груз страхуется на 30 евро каждое место.\n\nУчитывается объёмный вес, рассчитывается по формуле: длина * высоту * ширину / 5000\n\nДля оформления заказа необходимо предоставить информацию:\n\nSender details:\nFULL NAME: \nTelephone: \nAddress: \nPassport ID: \nDeclared price: \n\nRecipient details:\nFULL NAME: \nTelephone: \nZIP-code: \nRecipient address:';
-
-    await ctx.reply(text, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
-    await ctx.reply('<a href="https://t.me/BRING_registration_europa_bot">Отправить данные по заказу</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.europa, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.sendOrderEuropa, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
 bot.hears('Доставка в Европу', async (ctx) => {
 
-    const text = '<b>Инструкция:</b>\n\nДоставка в Европу.\n\nТариф 8,5 евро за кг. Срок 3-4 недели. Груз страхуется на 30 евро каждое место.\n\nУчитывается объёмный вес, рассчитывается по формуле: длина * высоту * ширину / 5000\n\nДля оформления заказа необходимо предоставить информацию:\n\nSender details:\n - FULL NAME: \n - Telephone: \n - Address: \n - Passport ID: \n - Declared price: \n\nRecipient details:\n - FULL NAME: \n - Telephone: \n - ZIP-code: \n - Recipient address:';
-
-    await ctx.reply(text, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
-    await ctx.reply('<a href="https://t.me/BRING_registration_europa_bot">Отправить данные по заказу</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
-
+    await ctx.reply(texts.europa, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.sendOrderEuropa, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
 //Коммерческий тариф
 bot.command('com', async (ctx) => {
 
-    const text = '<b>Инструкция:</b>\n\nТариф коммерческий:\n\nПо данному тарифу доставка в Грузию и отправка из Грузии  осуществляется по следующим направлениям: Россия, Беларусь, Казахстан, Киргизия, Армения.\n\nТранспортировка груза за пределами Грузии осуществляется компанией СДЭК.\n\nСтоимость доставки 18 лари за кг + тариф СДЭК.\n\nПредварительно посчитать стоимость можно оформив заказ. Бот проверяет корректность данных, заказы с некорректными данными обработаны не будут.\n\nДля оформления заказ:\n\n1. Необходимо отправить следующую информацию:- город отправления;\n- город назначения;\n- вес отправления;\n- что хотите отправить;\n- контактны данные получателя.\n\n2. При отправке из Грузии бот пришлёт инструкцию, как можно сдать отправление.\n\nПри отправке в Грузию бот пришлёт накладную СДЭК для передачи отправления в пункт приёма.\n\n3. После поступления заказа на пункт выдачи, получателю будет направлено персональное уведомление.';
-
-    await ctx.reply(text, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
-    await ctx.reply('<a href="https://t.me/BRING_registration_delivery_bot">Отправить данные по заказу</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.comertion, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
 bot.hears('Коммерческие грузы', async (ctx) => {
 
-    const text = '<b>Инструкция:</b>\n\nТариф коммерческий:\n\nПо данному тарифу доставка в Грузию и отправка из Грузии  осуществляется по следующим направлениям: Россия, Беларусь, Казахстан, Киргизия, Армения.\n\nТранспортировка груза за пределами Грузии осуществляется компанией СДЭК.\n\nСтоимость доставки 18 лари за кг + тариф СДЭК.\n\nПредварительно посчитать стоимость можно оформив заказ. Бот проверяет корректность данных, заказы с некорректными данными обработаны не будут.\n\nДля оформления заказ:\n\n1. Необходимо отправить следующую информацию:- город отправления;\n- город назначения;\n- вес отправления;\n- что хотите отправить;\n- контактны данные получателя.\n\n2. При отправке из Грузии бот пришлёт инструкцию, как можно сдать отправление.\n\nПри отправке в Грузию бот пришлёт накладную СДЭК для передачи отправления в пункт приёма.\n\n3. После поступления заказа на пункт выдачи, получателю будет направлено персональное уведомление.';
-
-    await ctx.reply(text, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
-    await ctx.reply('<a href="https://t.me/BRING_registration_delivery_bot">Отправить данные по заказу</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.comertion, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
 //документы
 bot.command('doc', async (ctx) => {
 
-    const text = 'В Документы текст: Тариф 70 лари за каждый кг. Любой вес округляется до полного кг в большую сторону.';
-
-    await ctx.reply(text, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
-    await ctx.reply('<a href="https://t.me/BRING_registration_delivery_bot">Отправить данные по заказу</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.documents, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
 bot.hears('Документы', async (ctx) => {
 
-    const text = 'В Документы текст: Тариф 70 лари за каждый кг. Любой вес округляется до полного кг в большую сторону.';
-
-    await ctx.reply(text, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
-    await ctx.reply('<a href="https://t.me/BRING_registration_delivery_bot">Отправить данные по заказу</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.documents, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
 //контакты
 bot.command('contacts', async (ctx) => {
 
-    const text = 'Батуми, ул. Шерифа Химшиашвили, 47а';
-
-    await ctx.reply(text, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
-});
-
-bot.hears('Наши данные и офисы', async (ctx) => {
-    
-    await ctx.reply('Батуми, ул. Шерифа Химшиашвили, 47а', { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.addresses.batumi, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.replyWithLocation(41.631546, 41.603927);
 
-    await ctx.reply('Тбилиси, ул. Цотне Дадиани, 7А', { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.addresses.tbilisi, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.replyWithLocation(41.719451, 44.802999);
 
-    await ctx.reply('<a href="https://t.me/bring_g">Написать менеджеру</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    const keyboard = new InlineKeyboard().text('Правила', 'rules');
+
+    await ctx.reply('Ознакомиться с правилами:', {
+        reply_markup: keyboard
+    });
+
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
+
+bot.hears('Офисы и правила', async (ctx) => {
+    
+    await ctx.reply(texts.addresses.batumi, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.replyWithLocation(41.631546, 41.603927);
+
+    await ctx.reply(texts.addresses.tbilisi, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.replyWithLocation(41.719451, 44.802999);
+
+    const keyboard = new InlineKeyboard().text('Правила', 'rules');
+
+    await ctx.reply('Ознакомиться с правилами:', { 
+        reply_markup: keyboard
+    });
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
+});
+
+//Правила
+bot.command('rules', async (ctx) => {
+    await ctx.reply(texts.rules, {parse_mode: 'HTML', disable_web_page_preview: true});
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
+
+});
+
+bot.callbackQuery('rules', async (ctx) => {
+
+    await ctx.answerCallbackQuery();
+    await ctx.reply(texts.rules, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
+})
 
 //удаление соообщений человека из списка
 const blockedUsers = [5733496893];
