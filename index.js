@@ -67,7 +67,7 @@ bot.command('start', async (ctx) => {
 //WB and OZON
 bot.command('wb', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 5-10 дней', 'expresswb').row().text('Эконом 18 gel/kg, 15-17 дней', 'economwb');
+    const keyboard = new InlineKeyboard().text('Экспресс 24 gel/kg, 5-12 дней', 'expresswb').row().text('Эконом 20 gel/kg, 15-17 дней', 'economwb');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -77,7 +77,7 @@ bot.command('wb', async (ctx) => {
 
 bot.hears('Доставка WB', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 5-10 дней', 'expresswb').row().text('Эконом 18 gel/kg, 15-17 дней', 'economwb');
+    const keyboard = new InlineKeyboard().text('Экспресс 24 gel/kg, 5-12 дней', 'expresswb').row().text('Эконом 20 gel/kg, 15-17 дней', 'economwb');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -87,7 +87,7 @@ bot.hears('Доставка WB', async (ctx) => {
 
 bot.command('ozon', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 5-10 дней', 'expressozon').row().text('Эконом 18 gel/kg, 15-17 дней', 'economoz');
+    const keyboard = new InlineKeyboard().text('Экспресс 24 gel/kg, 5-12 дней', 'expressozon').row().text('Эконом 20 gel/kg, 15-17 дней', 'economoz');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -97,7 +97,7 @@ bot.command('ozon', async (ctx) => {
 
 bot.hears('Доставка OZON', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 5-10 дней', 'expressozon').row().text('Эконом 18 gel/kg, 15-17 дней', 'economoz');
+    const keyboard = new InlineKeyboard().text('Экспресс 24 gel/kg, 5-12 дней', 'expressozon').row().text('Эконом 20 gel/kg, 15-17 дней', 'economoz');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -144,7 +144,7 @@ bot.callbackQuery('economoz', async (ctx) => {
 //ДРУГИЕ ИНТЕРНЕТ МАГАЗИНЫ
 bot.command('im', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 5-10 дней', 'expressim').row().text('Эконом 18 gel/kg, 15-17 дней', 'economim');
+    const keyboard = new InlineKeyboard().text('Экспресс 24 gel/kg, 5-12 дней', 'expressim').row().text('Эконом 20 gel/kg, 15-17 дней', 'economim');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -154,7 +154,7 @@ bot.command('im', async (ctx) => {
 
 bot.hears('Другие Интернет Магазины', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 5-10 дней', 'expressim').row().text('Эконом 18 gel/kg, 15-17 дней', 'economim');
+    const keyboard = new InlineKeyboard().text('Экспресс 24 gel/kg, 5-12 дней', 'expressim').row().text('Эконом 20 gel/kg, 15-17 дней', 'economim');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -183,7 +183,7 @@ bot.callbackQuery('economim', async (ctx) => {
 //Личные вещи
 bot.command('owen', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 10-15 дней', 'expressowen').row().text('Эконом 18 gel/kg, 15-20 дней', 'economowen');
+    const keyboard = new InlineKeyboard().text('Экспресс 24 gel/kg, 10-15 дней', 'expressowen').row().text('Эконом 20 gel/kg, 15-20 дней', 'economowen');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -193,7 +193,7 @@ bot.command('owen', async (ctx) => {
 
 bot.hears('Личные вещи', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 20 gel/kg, 10-15 дней', 'expressowen').row().text('Эконом 18 gel/kg, 15-20 дней', 'economowen');
+    const keyboard = new InlineKeyboard().text('Экспресс 24 gel/kg, 10-15 дней', 'expressowen').row().text('Эконом 20 gel/kg, 15-20 дней', 'economowen');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
