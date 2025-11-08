@@ -29,7 +29,7 @@ bot.command('start', async (ctx) => {
         .row().text('Документы').text("Офисы и правила")//.resized();
 
     await ctx.replyWithPhoto(new InputFile('logo.png'));
-    await ctx.reply('Привет, я бот BRING, помогу тебе разобраться.\n\nНаш <a href="https://www.instagram.com/bring__courier/">Instagram</a>\nНаш менеджер: @bring_g',
+    await ctx.reply('Привет, я бот BRING, помогу тебе разобраться.\n\nНаш <a href="https://www.instagram.com/bring__courier/">Instagram</a>\nНаш менеджер: @bring_g\n<a href="https://trackingcenter.space/">Трекинг</a>',
         { parse_mode: 'HTML', disable_web_page_preview: true }
     );
     await ctx.reply('Следуй инструкциям или напиши свой вопрос.', {
