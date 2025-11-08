@@ -13,8 +13,8 @@ bot.api.setMyCommands([
     { command: 'ozon', description: 'Доставка OZON' },
     { command: 'im', description: 'Другие Интернет Магазины' },
     { command: 'owen', description: 'Доставка личных вещей' },
-    { command: 'com', description: 'Коммерческие грузы' },
-    { command: 'europa', description: 'Доставка в Европу' },
+    { command: 'com', description: 'Коммерция, электронника' },
+    { command: 'europa', description: 'Европа, Турция, Украина' },
     { command: 'doc', description: 'Документы' },
     { command: 'contacts', description: 'Контактные данные' },
     { command: 'rules', description: 'Правила' },
@@ -25,7 +25,7 @@ bot.command('start', async (ctx) => {
     const startKeyboard = new Keyboard()
         .text("Доставка WB").text("Доставка OZON")
         .row().text("Другие Интернет Магазины").text("Личные вещи")
-        .row().text("Коммерческие грузы").text("Доставка в Европу")
+        .row().text("Коммерция, электронника").text("Европа, Турция, Украина")
         .row().text('Документы').text("Офисы и правила")//.resized();
 
     await ctx.replyWithPhoto(new InputFile('logo.png'));
@@ -225,7 +225,7 @@ bot.command('europa', async (ctx) => {
     await ctx.reply(texts.links.sendOrderEuropa, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
-bot.hears('Доставка в Европу', async (ctx) => {
+bot.hears('Европа, Турция, Украина', async (ctx) => {
 
     await ctx.reply(texts.europa, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
@@ -240,7 +240,7 @@ bot.command('com', async (ctx) => {
     await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
-bot.hears('Коммерческие грузы', async (ctx) => {
+bot.hears('Коммерция, электронника', async (ctx) => {
 
     await ctx.reply(texts.comertion, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
