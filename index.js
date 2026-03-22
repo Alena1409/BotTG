@@ -2,9 +2,72 @@ const texts = require('./texts');
 
 require('dotenv').config();
 const { Bot, GrammyError, HttpError, Keyboard, InlineKeyboard, InputFile } = require('grammy');
+const { apiThrottler } = require('@grammyjs/transformer-throttler');
 const fs = require('fs');
 
 const bot = new Bot(process.env.KEY);
+
+bot.api.config.use(apiThrottler()); //помогает не заблокировать рассылку
+
+const ADMIN_IDS = [973299977, 835352092];
+
+function getUserIds(filePath) {
+    try {
+        const data = fs.readFileSync(filePath, 'utf-8');
+        return data
+            .split('\n')
+            .map((line) => line.trim().split(',')[0])
+            .filter(Boolean)
+            .map((id) => Number(id))
+            .filter((id) => Number.isInteger(id) && id > 0);
+    } catch (err) {
+        console.error('Ошибка чтения файла:', err);
+        return [];
+    }
+}
+
+// Общая функция рассылки — чтобы не дублировать код
+async function sendBroadcast(ctx, filePath) {
+    if (!ctx.from) return;
+
+    if (!ADMIN_IDS.includes(ctx.from.id)) {
+        return ctx.reply('⛔ Нет доступа');
+    }
+
+    const message = ctx.match;
+
+    if (!message) {
+        return ctx.reply('Укажи текст рассылки.\n\nПример:\n/promo Новый тариф 🚀');
+    }
+
+    const users = getUserIds(filePath);
+
+    if (users.length === 0) {
+        return ctx.reply('❌ Список пользователей пуст');
+    }
+
+    await ctx.reply(`📤 Начинаю рассылку для ${users.length} пользователей...`);
+
+    let success = 0;
+    let failed = 0;
+
+    for (const id of users) {
+        try {
+            await bot.api.sendMessage(id, message, { parse_mode: 'HTML' });
+            success++;
+        } catch (err) {
+            console.error(`Не удалось отправить ${id}:`, err.description || err.message);
+            failed++;
+        }
+    }
+
+    await ctx.reply(
+        `📢 Рассылка завершена\n` +
+        `👥 Всего: ${users.length}\n` +
+        `✅ Отправлено: ${success}\n` +
+        `❌ Ошибок: ${failed}`
+    );
+}
 
 //СОЗДАЛИ МЕНЮ С КОМАНДАМИ В БОТЕ
 bot.api.setMyCommands([
@@ -41,13 +104,14 @@ bot.command('start', async (ctx) => {
             console.error('Ошибка при чтении файла:', err);
             return;
         }
- 
+
         // Создаем строку для нового контакта
         const newContact = [ctx.message.from.id, ctx.message.from.first_name, ctx.message.from.username, ctx.message.text].join(',');
 
         // Проверяем, существует ли контакт в файле
         const lines = data.split('\n');
-        let contactExists = lines.some(line => line.includes(ctx.message.from.id));
+        const id = String(ctx.message.from.id);
+        let contactExists = lines.some(line => line.startsWith(id + ',') || line.trim() === id);
 
         if (!contactExists) {
             // Если контакт не найден, добавляем его в файл
@@ -67,7 +131,7 @@ bot.command('start', async (ctx) => {
 //WB and OZON
 bot.command('wb', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 24 gel/kg, 5-12 дней', 'expresswb').row().text('Эконом 20 gel/kg, 15-17 дней', 'economwb');
+    const keyboard = new InlineKeyboard().text('Батуми 24 gel/kg, 5-15 дней', 'batumiwb').row().text('Тбилиси 22 gel/kg, 5-15 дней', 'tbilisiwb');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -77,17 +141,17 @@ bot.command('wb', async (ctx) => {
 
 bot.hears('Доставка WB', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 24 gel/kg, 5-12 дней', 'expresswb').row().text('Эконом 20 gel/kg, 15-17 дней', 'economwb');
+    const keyboard = new InlineKeyboard().text('Батуми 24 gel/kg, 5-15 дней', 'batumiwb').row().text('Тбилиси 22 gel/kg, 5-15 дней', 'tbilisiwb');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
     });
-    await ctx.reply(texts.links.manager,  { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
 bot.command('ozon', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 24 gel/kg, 5-12 дней', 'expressozon').row().text('Эконом 20 gel/kg, 15-17 дней', 'economoz');
+    const keyboard = new InlineKeyboard().text('Батуми 24 gel/kg, 5-15 дней', 'batumiozon').row().text('Тбилиси 22 gel/kg, 5-15 дней', 'tbilisiozon');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -97,7 +161,7 @@ bot.command('ozon', async (ctx) => {
 
 bot.hears('Доставка OZON', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 24 gel/kg, 5-12 дней', 'expressozon').row().text('Эконом 20 gel/kg, 15-17 дней', 'economoz');
+    const keyboard = new InlineKeyboard().text('Батуми 24 gel/kg, 5-15 дней', 'batumiozon').row().text('Тбилиси 22 gel/kg, 5-15 дней', 'tbilisiozon');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -105,38 +169,38 @@ bot.hears('Доставка OZON', async (ctx) => {
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 })
 
-bot.callbackQuery('expressozon', async (ctx) => {
+bot.callbackQuery('batumiozon', async (ctx) => {
 
     await ctx.answerCallbackQuery();
 
-    await ctx.reply(texts.expressozon, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.batumiozon, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true });
 })
 
-bot.callbackQuery('expresswb', async (ctx) => {
+bot.callbackQuery('batumiwb', async (ctx) => {
 
     await ctx.answerCallbackQuery();
 
-    await ctx.reply(texts.expresswb, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.batumiwb, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true });
 })
 
-bot.callbackQuery('economwb', async (ctx) => {
+bot.callbackQuery('tbilisiwb', async (ctx) => {
 
     await ctx.answerCallbackQuery();
 
-    await ctx.reply(texts.economwb, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.tbilisiwb, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true });
 })
 
-bot.callbackQuery('economoz', async (ctx) => {
+bot.callbackQuery('tbilisiozon', async (ctx) => {
 
     await ctx.answerCallbackQuery();
 
-    await ctx.reply(texts.economoz, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.tbilisiozon, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
@@ -144,7 +208,7 @@ bot.callbackQuery('economoz', async (ctx) => {
 //ДРУГИЕ ИНТЕРНЕТ МАГАЗИНЫ
 bot.command('im', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 24 gel/kg, 5-12 дней', 'expressim').row().text('Эконом 20 gel/kg, 15-17 дней', 'economim');
+    const keyboard = new InlineKeyboard().text('Батуми 24 gel/kg, 5-15 дней', 'batumiim').row().text('Тбилиси 22 gel/kg, 5-15 дней', 'tbilisiim');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -154,7 +218,7 @@ bot.command('im', async (ctx) => {
 
 bot.hears('Другие Интернет Магазины', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 24 gel/kg, 5-12 дней', 'expressim').row().text('Эконом 20 gel/kg, 15-17 дней', 'economim');
+    const keyboard = new InlineKeyboard().text('Батуми 24 gel/kg, 5-15 дней', 'batumiim').row().text('Тбилиси 22 gel/kg, 5-15 дней', 'tbilisiim');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -162,20 +226,20 @@ bot.hears('Другие Интернет Магазины', async (ctx) => {
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
-bot.callbackQuery('expressim', async (ctx) => {
+bot.callbackQuery('batumiim', async (ctx) => {
 
     await ctx.answerCallbackQuery();
 
-    await ctx.reply(texts.expressim, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.batumiim, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true });
 })
 
-bot.callbackQuery('economim', async (ctx) => {
+bot.callbackQuery('tbilisiim', async (ctx) => {
 
     await ctx.answerCallbackQuery();
 
-    await ctx.reply(texts.economim, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.tbilisiim, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
@@ -183,7 +247,7 @@ bot.callbackQuery('economim', async (ctx) => {
 //Личные вещи
 bot.command('owen', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 24 gel/kg, 10-15 дней', 'expressowen').row().text('Эконом 20 gel/kg, 15-20 дней', 'economowen');
+    const keyboard = new InlineKeyboard().text('Батуми 24 gel/kg, 5-15 дней', 'batumiowen').row().text('Тбилиси 22 gel/kg, 5-15 дней', 'tbilisiowen');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -193,7 +257,7 @@ bot.command('owen', async (ctx) => {
 
 bot.hears('Личные вещи', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Экспресс 24 gel/kg, 10-15 дней', 'expressowen').row().text('Эконом 20 gel/kg, 15-20 дней', 'economowen');
+    const keyboard = new InlineKeyboard().text('Батуми 24 gel/kg, 5-15 дней', 'batumiowen').row().text('Тбилиси 22 gel/kg, 5-15 дней', 'tbilisiowen');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -201,18 +265,18 @@ bot.hears('Личные вещи', async (ctx) => {
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
-bot.callbackQuery('expressowen', async (ctx) => {
+bot.callbackQuery('batumiowen', async (ctx) => {
 
     await ctx.answerCallbackQuery();
-    await ctx.reply(texts.expressowen, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.batumiowen, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true });
 })
 
-bot.callbackQuery('economowen', async (ctx) => {
+bot.callbackQuery('tbilisiowen', async (ctx) => {
 
     await ctx.answerCallbackQuery();
-    await ctx.reply(texts.economowen, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.tbilisiowen, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
@@ -269,7 +333,7 @@ bot.command('contacts', async (ctx) => {
     await ctx.replyWithLocation(41.631546, 41.603927);
 
     await ctx.reply(texts.addresses.tbilisi, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.replyWithLocation(41.719451, 44.802999);
+    await ctx.replyWithLocation(41.717250, 44.779166);
 
     const keyboard = new InlineKeyboard().text('Правила', 'rules');
 
@@ -281,16 +345,16 @@ bot.command('contacts', async (ctx) => {
 });
 
 bot.hears('Офисы и правила', async (ctx) => {
-    
+
     await ctx.reply(texts.addresses.batumi, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.replyWithLocation(41.631546, 41.603927);
 
     await ctx.reply(texts.addresses.tbilisi, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.replyWithLocation(41.719451, 44.802999);
+    await ctx.replyWithLocation(41.717250, 44.779166);
 
     const keyboard = new InlineKeyboard().text('Правила', 'rules');
 
-    await ctx.reply('Ознакомиться с правилами:', { 
+    await ctx.reply('Ознакомиться с правилами:', {
         reply_markup: keyboard
     });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
@@ -298,7 +362,7 @@ bot.hears('Офисы и правила', async (ctx) => {
 
 //Правила
 bot.command('rules', async (ctx) => {
-    await ctx.reply(texts.rules, {parse_mode: 'HTML', disable_web_page_preview: true});
+    await ctx.reply(texts.rules, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 
 });
@@ -309,6 +373,16 @@ bot.callbackQuery('rules', async (ctx) => {
     await ctx.reply(texts.rules, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 })
+
+// ===== РАССЫЛКА =====
+bot.command('promo', async (ctx) => {
+    await sendBroadcast(ctx, 'usome.txt');
+});
+
+// ===== ТЕСТОВАЯ РАССЫЛКА =====
+bot.command('test', async (ctx) => {
+    await sendBroadcast(ctx, 'test.txt');
+});
 
 //удаление соообщений человека из списка
 const blockedUsers = [5733496893];
@@ -324,6 +398,9 @@ bot.on('message', async (ctx) => {
         return;
     }
 
+    // Пропускаем команды — они уже обработаны выше
+    if (ctx.message.text && ctx.message.text.startsWith('/')) return;
+
     // Здесь вы можете добавить логику для обработки сообщений от пользователей, которые не заблокированы
     // Например, ответить на сообщение
     // await ctx.reply('Спасибо за ваше сообщение!');
@@ -336,11 +413,12 @@ bot.on('message', async (ctx) => {
         }
 
         // Создаем строку для нового контакта
-        const newContact = [ctx.message.from.id, ctx.message.from.first_name, ctx.message.from.username, ctx.message.text].join(',');
+        const newContact = [ctx.message.from.id, ctx.message.from.first_name, ctx.message.from.username].join(',');
 
         // Проверяем, существует ли контакт в файле
         const lines = data.split('\n');
-        let contactExists = lines.some(line => line.includes(ctx.message.from.id));
+        const id = String(ctx.message.from.id);
+        let contactExists = lines.some(line => line.startsWith(id + ',') || line.trim() === id);
 
         if (!contactExists) {
             // Если контакт не найден, добавляем его в файл
