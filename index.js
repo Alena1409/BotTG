@@ -71,13 +71,13 @@ async function sendBroadcast(ctx, filePath) {
 
 //СОЗДАЛИ МЕНЮ С КОМАНДАМИ В БОТЕ
 bot.api.setMyCommands([
-    { command: 'start', description: 'Посмотреть контакты' },
-    { command: 'wb', description: 'Доставка WB' },
-    { command: 'ozon', description: 'Доставка OZON' },
+    { command: 'start', description: 'Обновить' },
+    { command: 'marketplace', description: 'Доставка с маркетрлейсов' },
+    { command: 'tbilisibatumi', description: 'Доставка Тбилиси <-> Батуми' },
     { command: 'im', description: 'Другие Интернет Магазины' },
     { command: 'owen', description: 'Доставка личных вещей' },
     { command: 'com', description: 'Коммерция, электронника' },
-    { command: 'europa', description: 'Европа, Турция, Украина' },
+    { command: 'europa', description: 'Европа, Украина' },
     { command: 'doc', description: 'Документы' },
     { command: 'contacts', description: 'Контактные данные' },
     { command: 'rules', description: 'Правила' },
@@ -86,15 +86,13 @@ bot.api.setMyCommands([
 bot.command('start', async (ctx) => {
     console.log(ctx.message);
     const startKeyboard = new Keyboard()
-        .text("Доставка WB").text("Доставка OZON")
+        .text("Доставка с маркетрлейсов").text("Доставка Тбилиси <-> Батуми")
         .row().text("Другие Интернет Магазины").text("Личные вещи")
-        .row().text("Коммерция, электронника").text("Европа, Турция, Украина")
+        .row().text("Коммерция, электронника").text("Европа, Украина")
         .row().text('Документы').text("Офисы и правила")//.resized();
 
     await ctx.replyWithPhoto(new InputFile('logo.png'));
-    await ctx.reply('Привет, я бот BRING, помогу тебе разобраться.\n\nНаш <a href="https://www.instagram.com/bring__courier/">Instagram</a>\nНаш менеджер: @bring_g\n<a href="https://trackingcenter.space/">Трекинг</a>',
-        { parse_mode: 'HTML', disable_web_page_preview: true }
-    );
+    await ctx.reply(texts.greeting, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply('Следуй инструкциям или напиши свой вопрос.', {
         reply_markup: startKeyboard
     });
@@ -128,20 +126,10 @@ bot.command('start', async (ctx) => {
     });
 });
 
-//WB and OZON
-bot.command('wb', async (ctx) => {
+// marketplace
+bot.command('marketplace', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Батуми 24 gel/kg, 5-15 дней', 'batumiwb').row().text('Тбилиси 22 gel/kg, 5-15 дней', 'tbilisiwb');
-
-    await ctx.reply('Выберите тариф:', {
-        reply_markup: keyboard
-    });
-    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
-});
-
-bot.hears('Доставка WB', async (ctx) => {
-
-    const keyboard = new InlineKeyboard().text('Батуми 24 gel/kg, 5-15 дней', 'batumiwb').row().text('Тбилиси 22 gel/kg, 5-15 дней', 'tbilisiwb');
+    const keyboard = new InlineKeyboard().text('Батуми от 30 gel/kg, 5-15 дней', 'batumimarketplace').row().text('Тбилиси от 28 gel/kg, 5-15 дней', 'tbilisimarketplace');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -149,9 +137,9 @@ bot.hears('Доставка WB', async (ctx) => {
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
-bot.command('ozon', async (ctx) => {
+bot.hears('Доставка с маркетрлейсов', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Батуми 24 gel/kg, 5-15 дней', 'batumiozon').row().text('Тбилиси 22 gel/kg, 5-15 дней', 'tbilisiozon');
+    const keyboard = new InlineKeyboard().text('Батуми от 30 gel/kg, 5-15 дней', 'batumimarketplace').row().text('Тбилиси от 28 gel/kg, 5-15 дней', 'tbilisimarketplace');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -159,9 +147,20 @@ bot.command('ozon', async (ctx) => {
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
-bot.hears('Доставка OZON', async (ctx) => {
+bot.command('tbilisibatumi', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Батуми 24 gel/kg, 5-15 дней', 'batumiozon').row().text('Тбилиси 22 gel/kg, 5-15 дней', 'tbilisiozon');
+    const keyboard = new InlineKeyboard().text('До 30кг (посылка)', 'less30kg').row().text('От 30кг (переезд)', 'more30kg');
+
+    await ctx.reply('Выберите тариф:', {
+        reply_markup: keyboard
+    });
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
+});
+
+//посылки по грузии батуми тбилиси
+bot.hears('Доставка Тбилиси <-> Батуми', async (ctx) => {
+
+    const keyboard = new InlineKeyboard().text('До 30кг (посылка)', 'less30kg').row().text('От 30кг (переезд)', 'more30kg');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -169,46 +168,70 @@ bot.hears('Доставка OZON', async (ctx) => {
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 })
 
-bot.callbackQuery('batumiozon', async (ctx) => {
+bot.callbackQuery('less30kg', async (ctx) => {
 
     await ctx.answerCallbackQuery();
 
-    await ctx.reply(texts.batumiozon, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.less30kg, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true });
+    // await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true }); отправка на бота оформления заказов
+
+    const keyboard = new InlineKeyboard().text('Правила', 'rules');
+
+    await ctx.reply('Ознакомиться с правилами:', {
+        reply_markup: keyboard
+    });
 })
 
-bot.callbackQuery('batumiwb', async (ctx) => {
+bot.callbackQuery('batumimarketplace', async (ctx) => {
 
     await ctx.answerCallbackQuery();
 
-    await ctx.reply(texts.batumiwb, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.batumimarketplace, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true });
+    // await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true }); отправка ссылки на бота для оформления заказа
+    const keyboard = new InlineKeyboard().text('Правила', 'rules');
+
+    await ctx.reply('Ознакомиться с правилами:', {
+        reply_markup: keyboard
+    });
 })
 
-bot.callbackQuery('tbilisiwb', async (ctx) => {
+bot.callbackQuery('tbilisimarketplace', async (ctx) => {
 
     await ctx.answerCallbackQuery();
 
-    await ctx.reply(texts.tbilisiwb, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.tbilisimarketplace, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true });
+    // await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true }); отправка ссылки на бота для оформления заказа
+
+    const keyboard = new InlineKeyboard().text('Правила', 'rules');
+
+    await ctx.reply('Ознакомиться с правилами:', {
+        reply_markup: keyboard
+    });
 })
 
-bot.callbackQuery('tbilisiozon', async (ctx) => {
+bot.callbackQuery('more30kg', async (ctx) => {
 
     await ctx.answerCallbackQuery();
 
-    await ctx.reply(texts.tbilisiozon, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.more30kg, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true });
+    // await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true }); отправка ссылки на бота для оформления заказа
+
+    const keyboard = new InlineKeyboard().text('Правила', 'rules');
+
+    await ctx.reply('Ознакомиться с правилами:', {
+        reply_markup: keyboard
+    });
+
 });
 
 //ДРУГИЕ ИНТЕРНЕТ МАГАЗИНЫ
 bot.command('im', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Батуми 24 gel/kg, 5-15 дней', 'batumiim').row().text('Тбилиси 22 gel/kg, 5-15 дней', 'tbilisiim');
+    const keyboard = new InlineKeyboard().text('Батуми от 30 gel/kg, 5-15 дней', 'batumiim').row().text('Тбилиси от 28 gel/kg, 5-15 дней', 'tbilisiim');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -218,7 +241,7 @@ bot.command('im', async (ctx) => {
 
 bot.hears('Другие Интернет Магазины', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Батуми 24 gel/kg, 5-15 дней', 'batumiim').row().text('Тбилиси 22 gel/kg, 5-15 дней', 'tbilisiim');
+    const keyboard = new InlineKeyboard().text('Батуми от 30 gel/kg, 5-15 дней', 'batumiim').row().text('Тбилиси от 28 gel/kg, 5-15 дней', 'tbilisiim');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -232,7 +255,13 @@ bot.callbackQuery('batumiim', async (ctx) => {
 
     await ctx.reply(texts.batumiim, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true });
+    // await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true }); отправка ссылки на бота для оформления заказа
+
+    const keyboard = new InlineKeyboard().text('Правила', 'rules');
+
+    await ctx.reply('Ознакомиться с правилами:', {
+        reply_markup: keyboard
+    });
 })
 
 bot.callbackQuery('tbilisiim', async (ctx) => {
@@ -241,13 +270,19 @@ bot.callbackQuery('tbilisiim', async (ctx) => {
 
     await ctx.reply(texts.tbilisiim, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true });
+    // await ctx.reply(texts.links.sendOrder, { parse_mode: 'HTML', disable_web_page_preview: true }); отправка ссылки на бота для оформления заказа
+
+    const keyboard = new InlineKeyboard().text('Правила', 'rules');
+
+    await ctx.reply('Ознакомиться с правилами:', {
+        reply_markup: keyboard
+    });
 });
 
 //Личные вещи
 bot.command('owen', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Батуми 24 gel/kg, 5-15 дней', 'batumiowen').row().text('Тбилиси 22 gel/kg, 5-15 дней', 'tbilisiowen');
+    const keyboard = new InlineKeyboard().text('Батуми от 30 gel/kg, 5-15 дней', 'batumiowen').row().text('Тбилиси от 28 gel/kg, 5-15 дней', 'tbilisiowen');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -257,7 +292,7 @@ bot.command('owen', async (ctx) => {
 
 bot.hears('Личные вещи', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Батуми 24 gel/kg, 5-15 дней', 'batumiowen').row().text('Тбилиси 22 gel/kg, 5-15 дней', 'tbilisiowen');
+    const keyboard = new InlineKeyboard().text('Батуми от 30 gel/kg, 5-15 дней', 'batumiowen').row().text('Тбилиси от 28 gel/kg, 5-15 дней', 'tbilisiowen');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -270,7 +305,13 @@ bot.callbackQuery('batumiowen', async (ctx) => {
     await ctx.answerCallbackQuery();
     await ctx.reply(texts.batumiowen, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true });
+    // await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true }); отправка ссылки на бота для оформления заказа
+
+    const keyboard = new InlineKeyboard().text('Правила', 'rules');
+
+    await ctx.reply('Ознакомиться с правилами:', {
+        reply_markup: keyboard
+    });
 })
 
 bot.callbackQuery('tbilisiowen', async (ctx) => {
@@ -278,7 +319,13 @@ bot.callbackQuery('tbilisiowen', async (ctx) => {
     await ctx.answerCallbackQuery();
     await ctx.reply(texts.tbilisiowen, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true });
+    // await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true }); отправка ссылки на бота для оформления заказа
+
+    const keyboard = new InlineKeyboard().text('Правила', 'rules');
+
+    await ctx.reply('Ознакомиться с правилами:', {
+        reply_markup: keyboard
+    });
 });
 
 //Доставкав в Европу
@@ -286,14 +333,26 @@ bot.command('europa', async (ctx) => {
 
     await ctx.reply(texts.europa, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply(texts.links.sendOrderEuropa, { parse_mode: 'HTML', disable_web_page_preview: true });
+    // await ctx.reply(texts.links.sendOrderEuropa, { parse_mode: 'HTML', disable_web_page_preview: true }); отправка ссылки на бота для оформления заказа
+
+    const keyboard = new InlineKeyboard().text('Правила', 'rules');
+
+    await ctx.reply('Ознакомиться с правилами:', {
+        reply_markup: keyboard
+    });
 });
 
-bot.hears('Европа, Турция, Украина', async (ctx) => {
+bot.hears('Европа, Украина', async (ctx) => {
 
     await ctx.reply(texts.europa, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply(texts.links.sendOrderEuropa, { parse_mode: 'HTML', disable_web_page_preview: true });
+    // await ctx.reply(texts.links.sendOrderEuropa, { parse_mode: 'HTML', disable_web_page_preview: true }); отправка ссылки на бота для оформления заказа
+
+    const keyboard = new InlineKeyboard().text('Правила', 'rules');
+
+    await ctx.reply('Ознакомиться с правилами:', {
+        reply_markup: keyboard
+    });
 });
 
 //Коммерческий тариф
@@ -301,14 +360,27 @@ bot.command('com', async (ctx) => {
 
     await ctx.reply(texts.comertion, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true });
+    // await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true }); отправка ссылки на бота для оформления заказа
+
+    const keyboard = new InlineKeyboard().text('Правила', 'rules');
+
+    await ctx.reply('Ознакомиться с правилами:', {
+        reply_markup: keyboard
+    });
+
 });
 
 bot.hears('Коммерция, электронника', async (ctx) => {
 
     await ctx.reply(texts.comertion, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true });
+    // await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true }); отправка ссылки на бота для оформления заказа
+
+    const keyboard = new InlineKeyboard().text('Правила', 'rules');
+
+    await ctx.reply('Ознакомиться с правилами:', {
+        reply_markup: keyboard
+    });
 });
 
 //документы
@@ -316,14 +388,26 @@ bot.command('doc', async (ctx) => {
 
     await ctx.reply(texts.documents, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true });
+    // await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true }); отправка ссылки на бота для оформления заказа
+
+    const keyboard = new InlineKeyboard().text('Правила', 'rules');
+
+    await ctx.reply('Ознакомиться с правилами:', {
+        reply_markup: keyboard
+    });
 });
 
 bot.hears('Документы', async (ctx) => {
 
     await ctx.reply(texts.documents, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true });
+    // await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true }); отправка ссылки на бота для оформления заказа
+
+    const keyboard = new InlineKeyboard().text('Правила', 'rules');
+
+    await ctx.reply('Ознакомиться с правилами:', {
+        reply_markup: keyboard
+    });
 });
 
 //контакты
@@ -333,7 +417,7 @@ bot.command('contacts', async (ctx) => {
     await ctx.replyWithLocation(41.631546, 41.603927);
 
     await ctx.reply(texts.addresses.tbilisi, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.replyWithLocation(41.717250, 44.779166);
+    await ctx.replyWithLocation(41.719451, 44.802999);
 
     const keyboard = new InlineKeyboard().text('Правила', 'rules');
 
@@ -350,14 +434,15 @@ bot.hears('Офисы и правила', async (ctx) => {
     await ctx.replyWithLocation(41.631546, 41.603927);
 
     await ctx.reply(texts.addresses.tbilisi, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.replyWithLocation(41.717250, 44.779166);
+    await ctx.replyWithLocation(41.719451, 44.802999);
+
+    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 
     const keyboard = new InlineKeyboard().text('Правила', 'rules');
 
     await ctx.reply('Ознакомиться с правилами:', {
         reply_markup: keyboard
     });
-    await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
 //Правила
