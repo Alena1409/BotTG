@@ -73,12 +73,12 @@ async function sendBroadcast(ctx, filePath) {
 bot.api.setMyCommands([
     { command: 'start', description: 'Обновить' },
     { command: 'marketplace', description: 'Доставка с маркетрлейсов' },
-    { command: 'tbilisibatumi', description: 'Доставка Тбилиси <-> Батуми' },
+    { command: 'homeandauto', description: 'Для дома и авто' },
     { command: 'im', description: 'Другие Интернет Магазины' },
     { command: 'owen', description: 'Доставка личных вещей' },
     { command: 'com', description: 'Коммерция, электронника' },
     { command: 'europa', description: 'Европа, Украина' },
-    { command: 'doc', description: 'Документы' },
+    { command: 'health', description: 'Красота и Здоровье' },
     { command: 'contacts', description: 'Контактные данные' },
     { command: 'rules', description: 'Правила' },
 ]);
@@ -86,14 +86,27 @@ bot.api.setMyCommands([
 bot.command('start', async (ctx) => {
     console.log(ctx.message);
     const startKeyboard = new Keyboard()
-        .text("Доставка с маркетрлейсов").text("Доставка Тбилиси <-> Батуми")
+        .text("Доставка с маркетрлейсов").text("Для дома и авто")
         .row().text("Другие Интернет Магазины").text("Личные вещи")
         .row().text("Коммерция, электронника").text("Европа, Украина")
-        .row().text('Документы').text("Офисы и правила")//.resized();
+        .row().text('Красота и Здоровье').text("Офисы и правила")//.resized();
 
     await ctx.replyWithPhoto(new InputFile('logo.png'));
-    await ctx.reply(texts.greeting, { parse_mode: 'HTML', disable_web_page_preview: true });
-    await ctx.reply('Следуй инструкциям или напиши свой вопрос.', {
+    await ctx.reply(texts.greeting, {
+        parse_mode: 'HTML',
+        disable_web_page_preview: true,
+        reply_markup: {
+            inline_keyboard: [
+                [{
+                    text: "Открыть приложение",
+                    web_app: { url: 'https://bring-tma-react.vercel.app' }
+                }]
+            ]
+        }
+    });
+    // await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true, });
+    await ctx.reply(texts.links.manager, {
+        parse_mode: 'HTML', disable_web_page_preview: true,
         reply_markup: startKeyboard
     });
     // Читаем файл
@@ -129,7 +142,7 @@ bot.command('start', async (ctx) => {
 // marketplace
 bot.command('marketplace', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Батуми от 30 gel/kg, 5-15 дней', 'batumimarketplace').row().text('Тбилиси от 28 gel/kg, 5-15 дней', 'tbilisimarketplace');
+    const keyboard = new InlineKeyboard().text('Батуми от 25 gel/kg, 5-15 дней', 'batumimarketplace').row().text('Тбилиси от 25 gel/kg, 5-15 дней', 'tbilisimarketplace');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -139,7 +152,7 @@ bot.command('marketplace', async (ctx) => {
 
 bot.hears('Доставка с маркетрлейсов', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Батуми от 30 gel/kg, 5-15 дней', 'batumimarketplace').row().text('Тбилиси от 28 gel/kg, 5-15 дней', 'tbilisimarketplace');
+    const keyboard = new InlineKeyboard().text('Батуми от 25 gel/kg, 5-15 дней', 'batumimarketplace').row().text('Тбилиси от 25 gel/kg, 5-15 дней', 'tbilisimarketplace');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -147,9 +160,10 @@ bot.hears('Доставка с маркетрлейсов', async (ctx) => {
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
-bot.command('tbilisibatumi', async (ctx) => {
+//для дома и авто
+bot.command('homeandauto', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('До 30кг (посылка)', 'less30kg').row().text('От 30кг (переезд)', 'more30kg');
+    const keyboard = new InlineKeyboard().text('Батуми от 24 gel/kg, 5-15 дней', 'less30kg').row().text('Тбилиси от 24 gel/kg, 5-15 дней)', 'more30kg');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -157,10 +171,10 @@ bot.command('tbilisibatumi', async (ctx) => {
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
 });
 
-//посылки по грузии батуми тбилиси
-bot.hears('Доставка Тбилиси <-> Батуми', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('До 30кг (посылка)', 'less30kg').row().text('От 30кг (переезд)', 'more30kg');
+bot.hears('Для дома и авто', async (ctx) => {
+
+    const keyboard = new InlineKeyboard().text('Батуми от 24 gel/kg, 5-15 дней', 'less30kg').row().text('Тбилиси от 24 gel/kg, 5-15 дней)', 'more30kg');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -231,7 +245,7 @@ bot.callbackQuery('more30kg', async (ctx) => {
 //ДРУГИЕ ИНТЕРНЕТ МАГАЗИНЫ
 bot.command('im', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Батуми от 30 gel/kg, 5-15 дней', 'batumiim').row().text('Тбилиси от 28 gel/kg, 5-15 дней', 'tbilisiim');
+    const keyboard = new InlineKeyboard().text('Батуми от 24 gel/kg, 5-15 дней', 'batumiim').row().text('Тбилиси от 24 gel/kg, 5-15 дней', 'tbilisiim');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -241,7 +255,7 @@ bot.command('im', async (ctx) => {
 
 bot.hears('Другие Интернет Магазины', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Батуми от 30 gel/kg, 5-15 дней', 'batumiim').row().text('Тбилиси от 28 gel/kg, 5-15 дней', 'tbilisiim');
+    const keyboard = new InlineKeyboard().text('Батуми от 24 gel/kg, 5-15 дней', 'batumiim').row().text('Тбилиси от 24 gel/kg, 5-15 дней', 'tbilisiim');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -282,7 +296,7 @@ bot.callbackQuery('tbilisiim', async (ctx) => {
 //Личные вещи
 bot.command('owen', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Батуми от 30 gel/kg, 5-15 дней', 'batumiowen').row().text('Тбилиси от 28 gel/kg, 5-15 дней', 'tbilisiowen');
+    const keyboard = new InlineKeyboard().text('Батуми от 24 gel/kg, 5-15 дней', 'batumiowen').row().text('Тбилиси от 24 gel/kg, 5-15 дней', 'tbilisiowen');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -292,7 +306,7 @@ bot.command('owen', async (ctx) => {
 
 bot.hears('Личные вещи', async (ctx) => {
 
-    const keyboard = new InlineKeyboard().text('Батуми от 30 gel/kg, 5-15 дней', 'batumiowen').row().text('Тбилиси от 28 gel/kg, 5-15 дней', 'tbilisiowen');
+    const keyboard = new InlineKeyboard().text('Батуми от 24 gel/kg, 5-15 дней', 'batumiowen').row().text('Тбилиси от 24 gel/kg, 5-15 дней', 'tbilisiowen');
 
     await ctx.reply('Выберите тариф:', {
         reply_markup: keyboard
@@ -383,10 +397,10 @@ bot.hears('Коммерция, электронника', async (ctx) => {
     });
 });
 
-//документы
-bot.command('doc', async (ctx) => {
+//Красота и Здоровье
+bot.command('health', async (ctx) => {
 
-    await ctx.reply(texts.documents, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.health, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
     // await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true }); отправка ссылки на бота для оформления заказа
 
@@ -397,9 +411,9 @@ bot.command('doc', async (ctx) => {
     });
 });
 
-bot.hears('Документы', async (ctx) => {
+bot.hears('Красота и Здоровье', async (ctx) => {
 
-    await ctx.reply(texts.documents, { parse_mode: 'HTML', disable_web_page_preview: true });
+    await ctx.reply(texts.health, { parse_mode: 'HTML', disable_web_page_preview: true });
     await ctx.reply(texts.links.manager, { parse_mode: 'HTML', disable_web_page_preview: true });
     // await ctx.reply(texts.links.sendOrderDelivery, { parse_mode: 'HTML', disable_web_page_preview: true }); отправка ссылки на бота для оформления заказа
 
